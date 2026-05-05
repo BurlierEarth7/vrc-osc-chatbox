@@ -1,5 +1,6 @@
 use arc_swap::ArcSwap;
 use notify::RecommendedWatcher;
+use std::process::Command;
 use std::sync::Arc;
 mod constants;
 mod util;
@@ -12,6 +13,12 @@ use crate::util::watcher::watch_config;
 mod modes;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+
+    if let Err(e) = check_has_playerctl() {
+        eprintln!("{e}");
+        std::process::exit(127)
+    }
+
     let mut app = App::new()?;
 
     loop {
@@ -43,6 +50,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         };
 
         std::thread::sleep(sleep_duration);
+    }
+}
+
+fn check_has_playerctl() -> Result<(), String> {
+    let output = Command::new("playerctl").arg("--version").output();
+
+    match output {
+        Ok(_) => Ok(()),
+        Err(_) => Err("playerctl is not installed, or is not in your PATH".into())
     }
 }
 
