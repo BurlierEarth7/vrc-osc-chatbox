@@ -1,10 +1,8 @@
-use std::sync::{Arc, RwLock};
 
-use arc_swap::ArcSwap;
 
 use crate::{
     Config,
-    util::{error::AppError, formatter::MessageFormatter, osc::OscClient, player},
+    util::{error::AppError, formatter::MessageFormatter, osc::OscClient},
 };
 
 use super::ModeHandler;

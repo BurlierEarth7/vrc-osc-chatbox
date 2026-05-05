@@ -2,44 +2,6 @@ use std::{f64, process::Command};
 
 use crate::util::error::AppError;
 
-pub fn get_track(players: &str, user_format: &str, meta_format: &str) -> Result<String, AppError> {
-    let metadata = get_metadata(players, meta_format)?;
-
-    // Get optional position
-    let position = if needs_position(user_format) {
-        Some(get_position(players).unwrap_or(0.0))
-    } else {
-        None
-    };
-
-    // Get optional length
-    let length = if needs_length(user_format) {
-        Some(get_length(players).unwrap_or(0.0))
-    } else {
-        None
-    };
-
-    let mut result = user_format.replace("{meta}", &metadata);
-
-    if let Some(pos) = position {
-        result = result.replace("{position}", &format_time(pos));
-    }
-
-    if let Some(len) = length {
-        result = result.replace("{length}", &format_time(len));
-    }
-
-    Ok(result)
-}
-
-fn needs_position(format: &str) -> bool {
-    format.contains("{position}")
-}
-
-fn needs_length(format: &str) -> bool {
-    format.contains("{length}")
-}
-
 pub fn get_metadata(players: &str, format: &str) -> Result<String, AppError> {
     let output = Command::new("playerctl")
         .args(["-p", players, "metadata", "--format", format])

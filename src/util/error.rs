@@ -1,4 +1,4 @@
-use std::{error, process::ExitStatus};
+use std::process::ExitStatus;
 
 use thiserror::Error;
 
@@ -14,9 +14,6 @@ pub enum AppError {
         stderr: String,
     },
 
-    #[error("Failed to send message to OSC")]
-    SendFail,
-
     #[error("OSC encoding error: {0}")]
     OscEncode(#[from] rosc::OscError),
 
@@ -26,9 +23,6 @@ pub enum AppError {
     #[error("TOML parse error: {0}")]
     Toml(#[from] toml::de::Error),
 
-    #[error("Parse error")]
-    ParseError,
-
     #[error("Float Parse Error")]
-    ParseFloat(#[from] std::num::ParseFloatError)
+    ParseFloat(#[from] std::num::ParseFloatError),
 }

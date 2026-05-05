@@ -1,7 +1,3 @@
-use std::sync::Arc;
-
-use arc_swap::ArcSwap;
-
 use crate::{Config, util::{error::AppError, osc::OscClient}};
 
 pub(crate) mod sync;

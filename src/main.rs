@@ -30,7 +30,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             util::mode::Mode::Swap => {
                 app.handlers.on_change.tick(client, &config)?;
             }
-            _ => {}
         }
 
         let sleep_duration = match config.display_mode {
