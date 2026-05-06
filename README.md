@@ -1,5 +1,8 @@
 # VRChat OSC Chatbox
 
+>[!CAUTION]
+> This project is only available for UNIX operating systems which support playerctl + MPRIS via D-Bus. It is not intended to be used professionally. This project was originally designed to be a learning experience for Rust and OSC, and will remain so. Expect bugs, and janky code.
+
 This is a simple project designed to allow for hot-swappable chatbox inputs using playerctl.
 
 >[!WARNING]
