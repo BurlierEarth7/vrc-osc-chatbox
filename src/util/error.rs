@@ -14,6 +14,9 @@ pub enum AppError {
         stderr: String,
     },
 
+    #[error("No active media players")]
+    NoActivePlayers,
+
     #[error("OSC encoding error: {0}")]
     OscEncode(#[from] rosc::OscError),
 

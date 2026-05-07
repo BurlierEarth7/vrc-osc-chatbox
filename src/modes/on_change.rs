@@ -1,5 +1,3 @@
-
-
 use crate::{
     Config,
     util::{error::AppError, formatter::MessageFormatter, osc::OscClient},
@@ -19,7 +17,11 @@ impl OnChange {
 
 impl ModeHandler for OnChange {
     fn tick(&mut self, client: &OscClient, config: &Config) -> Result<(), AppError> {
-        let current = MessageFormatter::format(config, &config.players, &config.on_change_message)?;
+        let current =
+            match MessageFormatter::format(config, &config.players, &config.on_change_message)? {
+                Some(msg) => msg,
+                None => return Ok(()),
+            };
 
         let changed = match &self.last_track {
             Some(prev) if prev == &current => false,

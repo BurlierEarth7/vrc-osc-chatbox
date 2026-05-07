@@ -18,7 +18,7 @@ pub fn get_position(players: &str) -> Result<f64, AppError> {
 pub fn get_length(players: &str) -> Result<f64, AppError> {
     let length_str = query_players(
         players,
-        &["metadata", "--format", "mpris:length"],
+        &["metadata", "--format", "{{mpris:length}}"],
         "playerctl mpris:length",
     )?;
 
@@ -28,6 +28,17 @@ pub fn get_length(players: &str) -> Result<f64, AppError> {
     Ok(length_us / 1_000_000.0)
 }
 
+pub fn is_playing(players: &str) -> Result<bool, AppError> {
+    let status = get_player_status(players)?;
+
+    Ok(status == "Playing")
+
+}
+
+fn get_player_status(players: &str) -> Result<String, AppError> {
+    query_players(players, &["status"], "playerctl status")
+}
+
 fn query_players(players: &str, args: &[&str], cmd_name: &str) -> Result<String, AppError> {
     let query = Command::new("playerctl")
         .args(["-p", players])
@@ -35,6 +46,14 @@ fn query_players(players: &str, args: &[&str], cmd_name: &str) -> Result<String,
         .output()?;
 
     if !query.status.success() {
+        let stderr = String::from_utf8_lossy(&query.stderr).trim().to_string();
+
+        if stderr.contains("No players found")
+            || stderr.contains("No player could handle this command")
+        {
+            return Err(AppError::NoActivePlayers);
+        }
+
         return Err(AppError::CommandFail {
             cmd: cmd_name.into(),
             status: query.status,
