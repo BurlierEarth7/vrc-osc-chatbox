@@ -1,4 +1,4 @@
-use crate::{Config, util::{error::AppError, player::{format_time, get_length, get_metadata, get_position}}};
+use crate::{Config, constants::CHARACTER_LIMIT, util::{error::AppError, player::{format_time, get_length, get_metadata, get_position}}};
 
 pub struct MessageFormatter;
 
@@ -20,6 +20,12 @@ impl MessageFormatter {
         if template.contains("{length}") {
             let len = get_length(players).unwrap_or(0.0);
             result = result.replace("{length}", &format_time(len));
+        }
+
+        if result.len() > CHARACTER_LIMIT  {
+            eprintln!("VRChat only supports up to {CHARACTER_LIMIT} characters, your message will be trimmed!");
+            result.truncate(CHARACTER_LIMIT);
+            println!("Message trimmed to \"{result}\"")
         }
 
         Ok(result)
