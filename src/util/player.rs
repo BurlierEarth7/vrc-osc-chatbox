@@ -35,7 +35,7 @@ pub fn is_playing(players: &str) -> Result<bool, AppError> {
 
 }
 
-fn get_player_status(players: &str) -> Result<String, AppError> {
+pub fn get_player_status(players: &str) -> Result<String, AppError> {
     query_players(players, &["status"], "playerctl status")
 }
 
@@ -62,6 +62,23 @@ fn query_players(players: &str, args: &[&str], cmd_name: &str) -> Result<String,
     }
 
     Ok(String::from_utf8(query.stdout)?.trim().to_string())
+}
+
+pub fn list_players() -> Result<Vec<String>, AppError> {
+    let output = Command::new("playerctl")
+        .arg("-l")
+        .output()?;
+
+    if !output.status.success() {
+        return Err(AppError::CommandFail {
+            cmd: "playerctl -l".into(),
+            status: output.status,
+            stderr: String::from_utf8_lossy(&output.stderr).to_string(),
+        });
+    }
+
+    let stdout = String::from_utf8(output.stdout)?;
+    Ok(stdout.lines().map(|s| s.trim().to_string()).collect())
 }
 
 pub fn format_time(seconds: f64) -> String {

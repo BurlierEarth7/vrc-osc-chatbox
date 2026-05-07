@@ -8,7 +8,6 @@ impl ModeHandler for SyncMode {
     fn tick(&mut self, client: &OscClient, config: &Config) -> Result<(), AppError> {
         let message = match MessageFormatter::format(
             config,
-            &config.players,
             &config.sync_message,
         )? {
             Some(msg) => msg,
