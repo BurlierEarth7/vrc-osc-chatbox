@@ -10,9 +10,6 @@ This is a simple project designed to allow for hot-swappable chatbox inputs usin
 
 ## Running
 
-> [!WARNING]
-> `config.toml` is required in the CURRENT directory to run. Without it, the project will return an IO failure.
-
 To run the project, either use `cargo run`, or if using a prebuilt version, run the binary executable (e.g. `./vrc-osc-chatbox`)
 
 ## Configuration

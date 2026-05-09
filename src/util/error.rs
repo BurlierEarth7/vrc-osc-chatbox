@@ -26,6 +26,9 @@ pub enum AppError {
     #[error("TOML parse error: {0}")]
     Toml(#[from] toml::de::Error),
 
+    #[error("TOML serialization error: {0}")]
+    TomlSerialization(#[from] toml::ser::Error),
+
     #[error("Float Parse Error")]
     ParseFloat(#[from] std::num::ParseFloatError),
 }

@@ -1,10 +1,15 @@
-use std::{fs, net::SocketAddr, path::Path};
+use std::{
+    fs,
+    net::SocketAddr,
+    path::{Path, PathBuf},
+};
 
-use serde::Deserialize;
+use directories::ProjectDirs;
+use serde::{Deserialize, Serialize};
 
 use crate::util::{error::AppError, mode::Mode};
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
     pub display_mode: Mode,
     pub players: String,
@@ -15,17 +20,65 @@ pub struct Config {
     pub on_change_message: String,
     pub send_immediately: bool,
     pub notify_on_send: bool,
-    pub meta_format: String
+    pub meta_format: String,
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            display_mode: Mode::Sync,
+            players: "spotify,vlc,mpv,mpd".into(),
+            bind_address: "0.0.0.0:0".parse().unwrap(),
+            host_address: "127.0.0.1:9000".parse().unwrap(),
+            sync_message: "{meta} [{position}/{length}]".into(),
+            sync_refresh_interval_seconds: 5,
+            on_change_message: "Now Playing: {meta}".into(),
+            send_immediately: true,
+            notify_on_send: false,
+            meta_format: "{{title}} - {{artist}}".into(),
+        }
+    }
 }
 
 impl Config {
-    /// Load a TOML config file from the given path
-    /// 
-    /// * `path` - The specified path to the TOML config
-    pub fn load(path: &str) -> Result<Self, AppError> {
-        let content = fs::read_to_string(Path::new(path))?;
+    /// Load user TOML config
+    pub fn load() -> Result<Self, AppError> {
+        let path = Self::config_path();
+
+        if !path.exists() {
+            let default = Self::default();
+            default.write(&path)?;
+            return Ok(default);
+        }
+
+
+        println!("Configuration loaded from: {}", Self::config_path().to_string_lossy());
+        let content = fs::read_to_string(path)?;
         let config: Config = toml::from_str(&content)?;
 
         Ok(config)
+    }
+
+    // Write user TOML config
+    fn write(&self, path: &Path) -> Result<(), AppError> {
+        // Create configuration directory
+        if let Some(parent) = path.parent() {
+            eprintln!("No configuration detected!");
+            println!("A default configuration has been generated at: {}", Self::config_path().to_string_lossy());
+            fs::create_dir_all(parent)?;
+        }
+
+        // Write to config
+        let toml = toml::to_string_pretty(self)?;
+        fs::write(path, toml)?;
+        Ok(())
+    }
+
+    // Get expected config path
+    pub fn config_path() -> PathBuf {
+        let project_dirs = ProjectDirs::from("ca", "burlierearth7", "vrc-osc-chatbox")
+            .expect("Could not determine configuration directory");
+
+        project_dirs.config_dir().join("config.toml")
     }
 }

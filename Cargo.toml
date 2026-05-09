@@ -11,3 +11,4 @@ serde = {version = "1", features = ["derive"]}
 thiserror = "2.0.18"
 toml = "1.1.2"
 notify = "8.2.0"
+directories = "6.0.0"

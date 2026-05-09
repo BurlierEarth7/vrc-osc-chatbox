@@ -20,7 +20,7 @@ pub fn watch_config(
                 event::EventKind::Modify(_) | event::EventKind::Create(_) => {
                     println!("Configuration changed, reloading...");
 
-                    match Config::load(&path) {
+                    match Config::load() {
                         Ok(new_config) => {
                             config.store(Arc::new(new_config));
                             println!("Configuration reloaded!");
