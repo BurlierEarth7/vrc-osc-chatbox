@@ -51,12 +51,22 @@ impl Config {
             return Ok(default);
         }
 
-
-        println!("Configuration loaded from: {}", Self::config_path().to_string_lossy());
         let content = fs::read_to_string(path)?;
         let config: Config = toml::from_str(&content)?;
 
         Ok(config)
+    }
+
+    pub fn load_or_default() -> Self {
+        match Self::load() {
+            Ok(config) => config,
+
+            Err(e) => {
+                eprintln!("Failed to load config, using default as fallback until reloaded\n{e}");
+
+                Self::default()
+            }
+        }
     }
 
     // Write user TOML config
@@ -64,7 +74,10 @@ impl Config {
         // Create configuration directory
         if let Some(parent) = path.parent() {
             eprintln!("No configuration detected!");
-            println!("A default configuration has been generated at: {}", Self::config_path().to_string_lossy());
+            println!(
+                "A default configuration has been generated at: {}",
+                Self::config_path().to_string_lossy()
+            );
             fs::create_dir_all(parent)?;
         }
 
