@@ -81,7 +81,7 @@ struct App {
 impl App {
     fn new() -> Result<Self, Box<dyn std::error::Error>> {
         let config = Arc::new(ArcSwap::from_pointee(Config::load()?));
-        let watcher = watch_config(Config::config_path().to_string_lossy().into_owned(), config.clone())?;
+        let watcher = watch_config(Config::config_path(), config.clone())?;
         let cfg = config.load_full();
         let client = OscClient::new(cfg.bind_address, cfg.host_address)?;
 

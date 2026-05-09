@@ -1,25 +1,82 @@
-use std::sync::Arc;
+use std::{
+    path::PathBuf,
+    sync::{
+        mpsc::{channel, RecvTimeoutError},
+        Arc,
+    },
+    thread,
+    time::Duration,
+};
 
 use arc_swap::ArcSwap;
-use notify::{RecommendedWatcher, Watcher, event};
+use notify::{event, RecommendedWatcher, RecursiveMode, Watcher};
 
-use crate::util::config::Config;
+use crate::{constants, util::config::Config};
 
-// TODO: Verify watcher runs without needing 2nd path
-
+/// Watch a configuration file for changes
+/// 
+/// * path - The path of the file
+/// * config - How to store the config
 pub fn watch_config(
-    path: String,
+    path: PathBuf,
     config: Arc<ArcSwap<Config>>,
 ) -> notify::Result<RecommendedWatcher> {
-    let watch_path = path.clone();
+    // Setup MPSC Channel
+    let (tx, rx) = channel();
+
+    let config_file = path.file_name().unwrap().to_owned();
+    let watch_dir = path.parent().unwrap();
+
     let mut watcher = RecommendedWatcher::new(
-        move |res: Result<notify::Event, notify::Error>| {
-            let Ok(event) = res else { return };
+        move |res| {
+            let _ = tx.send(res);
+        },
+        notify::Config::default(),
+    )?;
+
+    // Watch directory for changes
+    watcher.watch(watch_dir, RecursiveMode::NonRecursive)?;
+
+    // Loop until file events are received
+    thread::spawn(move || {
+        loop {
+            // Event caught
+            let Ok(res) = rx.recv() else {
+                break;
+            };
+
+            // Invalid event
+            let Ok(event) = res else {
+                continue;
+            };
+
+            // Check if event affects config
+            let config_modified = event.paths.iter().any(|p| {
+                p.file_name()
+                    .map(|name| name == config_file)
+                    .unwrap_or(false)
+            });
+
+            if !config_modified {
+                continue;
+            }
 
             match event.kind {
-                event::EventKind::Modify(_) | event::EventKind::Create(_) => {
+                event::EventKind::Modify(_)
+                | event::EventKind::Create(_) => {
+
+                    // Debounce
+                    loop {
+                        match rx.recv_timeout(Duration::from_millis(constants::DEBOUNCE_TIMEOUT)) {
+                            Ok(_) => continue,
+                            Err(RecvTimeoutError::Timeout) => break,
+                            Err(RecvTimeoutError::Disconnected) => return,
+                        }
+                    }
+
                     println!("Configuration changed, reloading...");
 
+                    // Load new config
                     match Config::load() {
                         Ok(new_config) => {
                             config.store(Arc::new(new_config));
@@ -32,11 +89,8 @@ pub fn watch_config(
                 }
                 _ => {}
             }
-        },
-        notify::Config::default(),
-    )?;
-
-    watcher.watch(watch_path.as_ref(), notify::RecursiveMode::NonRecursive)?;
+        }
+    });
 
     Ok(watcher)
 }
