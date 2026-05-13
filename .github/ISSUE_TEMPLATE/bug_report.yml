@@ -11,6 +11,9 @@ body:
 
         Please provide as much detail as possible so the issue can be reproduced.
 
+        Notice: This Template was generated with the assistance of AI, some things may be inaccurate.
+        Please fill them out to the best of your ability!
+
   - type: textarea
     id: summary
     attributes:
