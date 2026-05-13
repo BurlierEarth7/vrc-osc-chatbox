@@ -20,7 +20,6 @@ pub struct Config {
     pub on_change_message: String,
     pub send_immediately: bool,
     pub notify_on_send: bool,
-    pub meta_format: String,
 }
 
 impl Default for Config {
@@ -30,12 +29,11 @@ impl Default for Config {
             players: "spotify,vlc,mpv,mpd".into(),
             bind_address: "0.0.0.0:0".parse().unwrap(),
             host_address: "127.0.0.1:9000".parse().unwrap(),
-            sync_message: "{meta} [{position}/{length}]".into(),
+            sync_message: "{{title}} - {{artist}} [{{position}}/{{length}}]".into(),
             sync_refresh_interval_seconds: 5,
-            on_change_message: "Now Playing: {meta}".into(),
+            on_change_message: "Now Playing: {{title}} - {{artist}}".into(),
             send_immediately: true,
             notify_on_send: false,
-            meta_format: "{{title}} - {{artist}}".into(),
         }
     }
 }

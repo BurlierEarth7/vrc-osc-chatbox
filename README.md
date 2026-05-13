@@ -27,33 +27,37 @@ display_mode
 # A list of players to listen to (e.g. "spotify,vlc")
 players
 
-# The UDP bind address (if unsure, set to "0.0.0.0:0") (See https://doc.rust-lang.org/stable/std/net/struct.UdpSocket.html#method.bind)
+# The UDP bind address 
+# (if unsure, set to "0.0.0.0:0")
+# (See https://doc.rust-lang.org/stable/std/net/struct.UdpSocket.html#method.bind)
 bind_address
 
-# The hosting address, this is the local IP of your computer (if unsure, set to "127.0.0.1:9000")
+# The hosting address, this is the local IP of your computer
+# (if unsure, set to "127.0.0.1:9000")
 host_address
 
 # The message to display when Sync is enabled
-# Text is taken as literal, with the exception of {length} and {position}
-# To use playerctl metadata, use {meta} and set the meta_format variable
+# Uses playerctl formatting (e.g. {{title}}, {{position}}, {{length}}, etc...)
+# position and length are specially formatted to be in mins + seconds, rather than ms
 sync_message
 
 # The delay in seconds between message updates
 sync_refresh_interval_seconds
 
 # The message to display when Swap is enabled
-# Text is taken as literal, with the exception of {length} and {position}
-# To use playerctl metadata, use {meta} and set the meta_format variable
+# Uses playerctl formatting (e.g. {{title}}, {{position}}, {{length}}, etc...)
+# position and length are specially formatted to be in mins + seconds, rather than ms
 on_change_message
 
-# If set to false, a dialogue box will be displayed to allow you to edit or modify the message before sending
+# If set to false, a dialogue box will be displayed
+# allowing you to edit or modify the message before sending
 send_immediately
 
-# Trigger a notify sfx callback (see https://docs.vrchat.com/docs/osc-as-input-controller#chatbox)
+# Trigger a notify sfx callback
+# (see https://docs.vrchat.com/docs/osc-as-input-controller#chatbox)
+# Not very useful unless you're using it for your own project
 notify_on_send
 
-# The format for the {meta} option, use this in sync_message or on_change_message to display playerctl information (e.g. {{title}} or {{artist}})
-meta_format
 ```
 
 ### Example configuration
@@ -68,12 +72,10 @@ players = "spotify,vlc,firefox"
 bind_address = "0.0.0.0:0"
 host_address = "127.0.0.1:9000"
 
-sync_message = "{meta} [{position}/{length}]"
+sync_message = "{{title}} - {{artist}} [{{position}}/{{length}}]"
 sync_refresh_interval_seconds = 1
 
-on_change_message = "Now Playing: {meta}"
-
-meta_format = "{{title}} - {{artist}}"
+on_change_message = "Now Playing: {{title}} - {{artist}}"
 
 send_immediately = true
 notify_on_send = false

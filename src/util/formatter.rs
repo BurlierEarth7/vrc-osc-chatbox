@@ -22,46 +22,47 @@ impl MessageFormatter {
             None => return Ok(None),
         };
 
-        let meta = match try_player_call(get_metadata(&player, &config.meta_format))? {
-            Some(meta) => meta,
-            None => return Ok(None),
-        };
-
         if !matches!(try_player_call(is_playing(&player))?, Some(true)) {
             return Ok(None);
         }
 
-        let mut result = template.replace("{meta}", &meta);
+        let mut formatted_result: String = template.into();
 
-        if template.contains("{position}") {
+        if template.contains("{{position}}") {
             let pos = match get_position(&player) {
                 Ok(pos) => pos,
                 Err(AppError::NoActivePlayers) => 0.0,
                 Err(e) => return Err(e),
             };
 
-            result = result.replace("{position}", &format_time(pos));
+            formatted_result = formatted_result.replace("{{position}}", &format_time(pos));
         }
 
-        if template.contains("{length}") {
+        if template.contains("{{length}}") {
             let len = match get_length(&player) {
                 Ok(len) => len,
                 Err(AppError::NoActivePlayers) => 0.0,
                 Err(e) => return Err(e),
             };
 
-            result = result.replace("{length}", &format_time(len));
+            formatted_result = formatted_result.replace("{{length}}", &format_time(len));
         }
 
-        if result.len() > CHARACTER_LIMIT {
+        formatted_result = match try_player_call(get_metadata(&player, &formatted_result))? {
+            Some(meta) => meta,
+            None => return Ok(None),
+        };
+
+
+        if formatted_result.len() > CHARACTER_LIMIT {
             eprintln!(
                 "VRChat only supports up to {CHARACTER_LIMIT} characters, your message will be trimmed!"
             );
-            result.truncate(CHARACTER_LIMIT);
-            println!("Message trimmed to \"{result}\"")
+            formatted_result.truncate(CHARACTER_LIMIT);
+            println!("Message trimmed to \"{formatted_result}\"")
         }
 
-        Ok(Some(result))
+        Ok(Some(formatted_result))
     }
 }
 
