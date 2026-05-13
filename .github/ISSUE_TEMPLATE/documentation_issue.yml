@@ -1,0 +1,31 @@
+name: Documentation
+description: Report missing, unclear, or incorrect documentation
+title: "[Docs]: "
+labels:
+  - documentation
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        notice: this template was generated with the assistance of ai, some things may be inaccurate.
+        please fill them out to the best of your ability!
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Documentation Issue"
+      placeholder: What is missing or unclear?
+    validations:
+      required: true
+
+  - type: input
+    id: location
+    attributes:
+      label: Location"
+      placeholder: README, wiki, config example, etc.
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested Improvement"

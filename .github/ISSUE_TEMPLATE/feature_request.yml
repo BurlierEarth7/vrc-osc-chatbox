@@ -1,0 +1,54 @@
+name: Feature Request
+description: Suggest an idea or improvement
+title: "[Feature]: "
+labels:
+  - enhancement
+
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement"
+      description: What problem are you trying to solve?
+      placeholder: It is currently difficult to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution"
+      placeholder: Describe the feature or behavior you'd like.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered"
+      placeholder: Describe any alternative approaches.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Relevant Area"
+      options:
+        - OSC
+        - VRChat Integration
+        - PlayerCTL
+        - Configuration
+        - File Watching
+        - Linux Compatibility
+        - Performance
+        - Documentation
+        - Developer Experience
+        - Other
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Example Usage"
+      placeholder: |
+        Example config:
+
+        enabled = true

@@ -1,0 +1,6 @@
+blank_issues_enabled: true
+
+contact_links:
+  - name: VRChat OSC Documentation
+    url: https://docs.vrchat.com/docs/osc-overview
+    about: Official VRChat OSC documentation.

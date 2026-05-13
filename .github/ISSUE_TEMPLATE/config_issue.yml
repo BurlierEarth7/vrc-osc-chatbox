@@ -1,0 +1,31 @@
+name: Configuration Issue
+description: Issues involving TOML configuration or hot reload behavior
+title: "[Config]: "
+labels:
+  - configuration
+
+body:
+  - type: textarea
+    id: config
+    attributes:
+      label: Configuration File"
+      render: toml
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue
+    attributes:
+      label: Problem Description"
+      placeholder: Describe what is incorrect or unexpected.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Verification"
+      options:
+        - label: I validated the TOML syntax.
+        - label: I restarted the application after editing.
+        - label: I checked the documentation/examples.
