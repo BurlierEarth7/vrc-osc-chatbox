@@ -14,8 +14,8 @@ To run the project, either use `cargo run`, or if using a prebuilt version, run 
 
 ## Configuration
 
-> [!IMPORTANT]
-> All configuration options must be present, this implementation may be improved in future releases
+> [!NOTE]
+> On first run, your config will auto populate with default data. If this data ever becomes invalid, or is removed from your config, it will revert to this default value
 
 The following configuration options are available:
 

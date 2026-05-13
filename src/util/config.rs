@@ -5,21 +5,49 @@ use std::{
 };
 
 use directories::ProjectDirs;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 
 use crate::util::{error::AppError, mode::Mode};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
 pub struct Config {
+    #[serde(deserialize_with = "default_on_error")]
     pub display_mode: Mode,
+    #[serde(deserialize_with = "default_on_error")]
     pub players: String,
+    #[serde(default = "default_bind")]
     pub bind_address: SocketAddr,
+    #[serde(default = "default_host")]
     pub host_address: SocketAddr,
+    #[serde(deserialize_with = "default_on_error")]
     pub sync_message: String,
+    #[serde(deserialize_with = "default_on_error")]
     pub sync_refresh_interval_seconds: u64,
+    #[serde(deserialize_with = "default_on_error")]
     pub swap_message: String,
+    #[serde(deserialize_with = "default_on_error")]
     pub send_immediately: bool,
+    #[serde(deserialize_with = "default_on_error")]
     pub notify_on_send: bool,
+}
+
+fn default_on_error<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+where
+    D: Deserializer<'de>,
+    T: Deserialize<'de> + Default,
+{
+    Ok(T::deserialize(deserializer).unwrap_or_default())
+}
+
+// Custom defaults for sockets, since they do not have a default
+
+fn default_bind() -> SocketAddr {
+    "0.0.0.0:0".parse().unwrap()
+}
+
+fn default_host() -> SocketAddr {
+    "127.0.0.1:9000".parse().unwrap()
 }
 
 impl Default for Config {
