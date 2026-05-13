@@ -47,7 +47,7 @@ sync_refresh_interval_seconds
 # The message to display when Swap is enabled
 # Uses playerctl formatting (e.g. {{title}}, {{position}}, {{length}}, etc...)
 # position and length are specially formatted to be in mins + seconds, rather than ms
-on_change_message
+swap_message
 
 # If set to false, a dialogue box will be displayed
 # allowing you to edit or modify the message before sending
@@ -75,7 +75,7 @@ host_address = "127.0.0.1:9000"
 sync_message = "{{title}} - {{artist}} [{{position}}/{{length}}]"
 sync_refresh_interval_seconds = 1
 
-on_change_message = "Now Playing: {{title}} - {{artist}}"
+swap_message = "Now Playing: {{title}} - {{artist}}"
 
 send_immediately = true
 notify_on_send = false

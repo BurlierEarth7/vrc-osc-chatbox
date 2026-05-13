@@ -18,7 +18,7 @@ impl OnChange {
 impl ModeHandler for OnChange {
     fn tick(&mut self, client: &OscClient, config: &Config) -> Result<(), AppError> {
         let current =
-            match MessageFormatter::format(config,  &config.on_change_message)? {
+            match MessageFormatter::format(config,  &config.swap_message)? {
                 Some(msg) => msg,
                 None => return Ok(()),
             };

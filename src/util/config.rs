@@ -17,7 +17,7 @@ pub struct Config {
     pub host_address: SocketAddr,
     pub sync_message: String,
     pub sync_refresh_interval_seconds: u64,
-    pub on_change_message: String,
+    pub swap_message: String,
     pub send_immediately: bool,
     pub notify_on_send: bool,
 }
@@ -31,7 +31,7 @@ impl Default for Config {
             host_address: "127.0.0.1:9000".parse().unwrap(),
             sync_message: "{{title}} - {{artist}} [{{position}}/{{length}}]".into(),
             sync_refresh_interval_seconds: 5,
-            on_change_message: "Now Playing: {{title}} - {{artist}}".into(),
+            swap_message: "Now Playing: {{title}} - {{artist}}".into(),
             send_immediately: true,
             notify_on_send: false,
         }
