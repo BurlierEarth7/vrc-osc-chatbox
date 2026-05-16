@@ -1,6 +1,8 @@
-use std::{f64, process::Command};
+use std::{f64, process::Command, sync::OnceLock};
 
 use crate::util::error::AppError;
+
+static HAS_PLAYERCTL: OnceLock<Result<(), String>> = OnceLock::new();
 
 pub fn get_metadata(players: &str, format: &str) -> Result<String, AppError> {
     query_players(
@@ -32,7 +34,6 @@ pub fn is_playing(players: &str) -> Result<bool, AppError> {
     let status = get_player_status(players)?;
 
     Ok(status == "Playing")
-
 }
 
 pub fn get_player_status(players: &str) -> Result<String, AppError> {
@@ -40,6 +41,10 @@ pub fn get_player_status(players: &str) -> Result<String, AppError> {
 }
 
 fn query_players(players: &str, args: &[&str], cmd_name: &str) -> Result<String, AppError> {
+    if let Err(e) = check_has_playerctl() {
+        eprintln!("{e}");
+        return Ok("".into());
+    }
     let query = Command::new("playerctl")
         .args(["-p", players])
         .args(args)
@@ -65,9 +70,11 @@ fn query_players(players: &str, args: &[&str], cmd_name: &str) -> Result<String,
 }
 
 pub fn list_players() -> Result<Vec<String>, AppError> {
-    let output = Command::new("playerctl")
-        .arg("-l")
-        .output()?;
+    if let Err(e) = check_has_playerctl() {
+        eprintln!("{e}");
+        return Ok(vec![])
+    }
+    let output = Command::new("playerctl").arg("-l").output()?;
 
     if !output.status.success() {
         return Err(AppError::CommandFail {
@@ -86,4 +93,15 @@ pub fn format_time(seconds: f64) -> String {
     let mins = total / 60;
     let secs = total % 60;
     format!("{:02}:{:02}", mins, secs)
+}
+
+pub fn check_has_playerctl() -> Result<(), String> {
+    HAS_PLAYERCTL
+        .get_or_init(
+            || match Command::new("playerctl").arg("--version").output() {
+                Ok(_) => Ok(()),
+                Err(_) => Err("playerctl is not installed, or is not in your PATH.".into()),
+            },
+        )
+        .clone()
 }

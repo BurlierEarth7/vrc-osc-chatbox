@@ -1,6 +1,7 @@
 use crate::{
     Config,
     constants::CHARACTER_LIMIT,
+    modules::datetime::date::Date,
     util::{
         error::AppError,
         player::{
@@ -13,10 +14,7 @@ use crate::{
 pub struct MessageFormatter;
 
 impl MessageFormatter {
-    pub fn format(
-        config: &Config,
-        template: &str,
-    ) -> Result<Option<String>, AppError> {
+    pub fn format(config: &Config, template: &str) -> Result<Option<String>, AppError> {
         let player = match resolve_active_player(&config.players)? {
             Some(p) => p,
             None => return Ok(None),
@@ -48,11 +46,21 @@ impl MessageFormatter {
             formatted_result = formatted_result.replace("{{length}}", &format_time(len));
         }
 
+        if template.contains("{{date}}") {
+            match Date::get_date(&config.date_format) {
+                Ok(date) => {
+                    formatted_result = formatted_result.replace("{{date}}", &date);
+                }
+                Err(e) => {
+                    eprintln!("WARNING: Failed to get date: {e}\nThe date will not be rendered");
+                }
+            }
+        }
+
         formatted_result = match try_player_call(get_metadata(&player, &formatted_result))? {
             Some(meta) => meta,
             None => return Ok(None),
         };
-
 
         if formatted_result.len() > CHARACTER_LIMIT {
             eprintln!(

@@ -30,6 +30,8 @@ pub struct Config {
     pub send_immediately: bool,
     #[serde(deserialize_with = "default_on_error")]
     pub notify_on_send: bool,
+    #[serde(deserialize_with = "default_on_error")]
+    pub date_format: String,
 }
 
 fn default_on_error<'de, D, T>(deserializer: D) -> Result<T, D::Error>
@@ -62,6 +64,7 @@ impl Default for Config {
             swap_message: "Now Playing: {{title}} - {{artist}}".into(),
             send_immediately: true,
             notify_on_send: false,
+            date_format: "+%c".into()
         }
     }
 }

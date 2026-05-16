@@ -1,6 +1,5 @@
 use arc_swap::ArcSwap;
 use notify::RecommendedWatcher;
-use std::process::Command;
 use std::sync::Arc;
 mod constants;
 mod util;
@@ -9,14 +8,18 @@ use crate::modules::music::modes::on_change::OnChange;
 use crate::modules::music::modes::sync::SyncMode;
 use crate::util::config::Config;
 use crate::util::osc::OscClient;
+use crate::util::player;
 use crate::util::watcher::watch_config;
 mod modules;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
 
-    if let Err(e) = check_has_playerctl() {
-        eprintln!("{e}");
-        std::process::exit(127)
+    if let Err(_) = player::check_has_playerctl() {
+        eprintln!("WARNING: Playerctl is not installed, no commands using it will work!");
+    }
+
+    if let Err(_) = modules::datetime::date::Date::check_has_date() {
+        eprintln!("WARNING: date is not installed, no commands using it will work!");
     }
 
     let mut app = App::new()?;
@@ -53,14 +56,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 }
 
-fn check_has_playerctl() -> Result<(), String> {
-    let output = Command::new("playerctl").arg("--version").output();
-
-    match output {
-        Ok(_) => Ok(()),
-        Err(_) => Err("playerctl is not installed, or is not in your PATH".into())
-    }
-}
 
 struct RuntimeState {
     client: Option<OscClient>,

@@ -58,6 +58,11 @@ send_immediately
 # Not very useful unless you're using it for your own project
 notify_on_send
 
+# Allows using the GNU Core Utils date command to display your local datetime
+# See https://www.man7.org/linux/man-pages/man1/date.1.html for formatting
+# To display this in your message, use {{date}}
+date_format
+
 ```
 
 ### Example configuration
