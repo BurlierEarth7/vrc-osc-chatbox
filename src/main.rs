@@ -4,13 +4,13 @@ use std::process::Command;
 use std::sync::Arc;
 mod constants;
 mod util;
-use crate::modes::ModeHandler;
-use crate::modes::on_change::OnChange;
-use crate::modes::sync::SyncMode;
+use crate::modules::music::modes::ModeHandler;
+use crate::modules::music::modes::on_change::OnChange;
+use crate::modules::music::modes::sync::SyncMode;
 use crate::util::config::Config;
 use crate::util::osc::OscClient;
 use crate::util::watcher::watch_config;
-mod modes;
+mod modules;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
 
